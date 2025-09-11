@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Procurement System</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 32px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: #2d3748;
+            margin-bottom: 12px;
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 1.2rem;
+            font-weight: 400;
+        }
+
+        .connection-status {
+            text-align: center;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .connected {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+        }
+
+        .disconnected {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 32px;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 6px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .nav-tab {
+            padding: 14px 24px;
+            margin: 0 4px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #4a5568;
+        }
+
+        .nav-tab:hover {
+            background: rgba(14, 165, 233, 0.1);
+            color: #0ea5e9;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #2d3748;
+            margin-bottom: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 15px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+            background: white;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #0ea5e9;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-right: 12px;
+            margin-bottom: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 8px 25px rgba(20, 184, 166, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #fc8181 0%, #e53e3e 100%);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-open { background: #c6f6d5; color: #22543d; }
+        .status-closed { background: #fed7d7; color: #742a2a; }
+        .status-awarded { background: #bee3f8; color: #2a4365; }
+        .status-evaluated { background: #faf089; color: #744210; }
+        .status-cancelled { background: #e2e8f0; color: #4a5568; }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0ea5e9;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .card h3 {
+            color: #2d3748;
+            margin-bottom: 16px;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .card p {
+            color: #718096;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .card strong {
+            color: #4a5568;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .info-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .info-section h3 {
+            color: #2d3748;
+            margin-bottom: 16px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .info-section ol {
+            margin: 16px 0;
+            padding-left: 20px;
+        }
+
+        .info-section ol li {
+            margin: 8px 0;
+            color: #4a5568;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #0ea5e9;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-info {
+            background: #ebf8ff;
+            color: #2b6cb0;
+            border-left: 4px solid #3182ce;
+        }
+
+        .alert-success {
+            background: #f0fff4;
+            color: #22543d;
+            border-left: 4px solid #38a169;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border-left: 4px solid #e53e3e;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .nav-tabs {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .nav-tab {
+                padding: 12px 18px;
+                font-size: 14px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 Privacy Procurement System</h1>
+            <p class="subtitle">Confidential procurement process powered by Fully Homomorphic Encryption</p>
+        </div>
+
+        <div id="connectionStatus" class="connection-status disconnected">
+            <div class="loading-spinner"></div> Initializing blockchain connection...
+        </div>
+
+        <div id="connectionPanel" class="info-section" style="display: none;">
+            <h3>🔗 Connect Your Wallet</h3>
+            <p>To use this application, please connect your MetaMask wallet:</p>
+            <ol>
+                <li>Make sure MetaMask is installed and unlocked</li>
+                <li>Click "Connect Wallet" below</li>
+                <li>Approve the connection in MetaMask</li>
+                <li>Make sure you're on the correct network (Sepolia testnet)</li>
+            </ol>
+            <button class="btn" onclick="connectWallet()">
+                🔗 Connect Wallet
+            </button>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('supplier')">
+                👤 Supplier Registration
+            </button>
+            <button class="nav-tab" onclick="switchTab('tender')">
+                📋 Tender Management
+            </button>
+            <button class="nav-tab" onclick="switchTab('bid')">
+                💰 Bid Management
+            </button>
+            <button class="nav-tab" onclick="switchTab('history')">
+                📜 History
+            </button>
+        </div>
+
+        <!-- Supplier Registration Tab -->
+        <div id="supplier" class="tab-content active">
+            <h2 class="section-title">
+                👤 Supplier Registration & Management
+            </h2>
+
+            <div class="form-group">
+                <label class="form-label" for="supplierName">Company Name</label>
+                <input type="text" id="supplierName" class="form-input" placeholder="Enter your company name">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="supplierCategory">Business Category</label>
+                <select id="supplierCategory" class="form-select">
+                    <option value="">Select business category</option>
+                    <option value="construction">Construction & Engineering</option>
+                    <option value="technology">Information Technology</option>
+                    <option value="supplies">Office Supplies</option>
+                    <option value="services">Professional Services</option>
+                    <option value="equipment">Equipment & Machinery</option>
+                    <option value="consulting">Consulting Services</option>
+                    <option value="logistics">Logistics & Transportation</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button class="btn" onclick="registerSupplier()">
+                    ✅ Register as Supplier
+                </button>
+                <button class="btn btn-secondary" onclick="checkSupplierStatus()">
+                    🔍 Check Status
+                </button>
+            </div>
+
+            <div id="supplierInfo" class="info-section" style="display: none;">
+                <h3>📊 Supplier Information</h3>
+                <div id="supplierDetails"></div>
+            </div>
+        </div>
+
+        <!-- Tender Management Tab -->
+        <div id="tender" class="tab-content">
+            <h2 class="section-title">
+                📋 Tender Management
+            </h2>
+
+            <div class="alert alert-info">
+                <strong>ℹ️ For Procurement Authorities:</strong> Create and manage tender processes with complete privacy protection.
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="tenderTitle">Tender Title</label>
+                <input type="text" id="tenderTitle" class="form-input" placeholder="Enter tender project title">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="tenderDescription">Project Description</label>
+                <textarea id="tenderDescription" class="form-textarea" placeholder="Provide detailed description of the tender requirements and specifications"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="tenderBudget">Budget Amount (ETH)</label>
+                <input type="number" id="tenderBudget" class="form-input" step="0.01" placeholder="Enter budget amount in ETH">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="tenderDeadline">Deadline</label>
+                <input type="datetime-local" id="tenderDeadline" class="form-input">
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="requireQualification">
+                    <label class="form-label" for="requireQualification">Require qualification certification</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button class="btn" onclick="createTender()">
+                    🚀 Publish Tender
+                </button>
+                <button class="btn btn-secondary" onclick="loadTenders()">
+                    🔄 Refresh List
+                </button>
+            </div>
+
+            <div id="tendersList" class="grid"></div>
+        </div>
+
+        <!-- Bid Management Tab -->
+        <div id="bid" class="tab-content">
+            <h2 class="section-title">
+                💰 Bid Management
+            </h2>
+
+            <div class="alert alert-info">
+                <strong>🔒 Privacy Protected:</strong> Your bid amounts are encrypted using FHE technology and remain confidential until evaluation.
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="bidTenderId">Tender ID</label>
+                <input type="number" id="bidTenderId" class="form-input" placeholder="Enter the tender ID you want to bid on">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="bidAmount">Bid Amount (ETH)</label>
+                <input type="number" id="bidAmount" class="form-input" step="0.01" placeholder="Enter your bid amount in ETH">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="bidProposal">Technical Proposal</label>
+                <textarea id="bidProposal" class="form-textarea" placeholder="Describe your technical approach, timeline, and competitive advantages"></textarea>
+            </div>
+
+            <div class="form-group">
+                <button class="btn" onclick="submitBid()">
+                    📤 Submit Bid
+                </button>
+                <button class="btn btn-secondary" onclick="loadMyBids()">
+                    📋 My Bids
+                </button>
+            </div>
+
+            <div id="bidsList" class="grid"></div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="history" class="tab-content">
+            <h2 class="section-title">
+                📜 Transaction History
+            </h2>
+
+            <div class="form-group">
+                <button class="btn btn-secondary" onclick="loadHistory()">
+                    📥 Load History
+                </button>
+                <button class="btn" onclick="loadAllTenders()">
+                    📋 All Tenders
+                </button>
+            </div>
+
+            <div id="historyList" class="grid"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+        // Fallback CDN if primary fails
+        if (typeof ethers === 'undefined') {
+            document.write('<script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"><\/script>');
+        }
+    </script>
+    <script>
+        let provider;
+        let signer;
+        let contract;
+        let userAccount;
+
+        const contractAddress = "0xeE2E4Ec62f4A4846626bDe4a362e7e8A4D1256D7";
+        const contractABI = [
+            "function registerSupplier(string memory _name, string memory _category) external",
+            "function qualifySupplier(address supplier, uint8 qualificationScore) external",
+            "function createTender(string memory _title, string memory _description, uint256 _budget, uint256 _deadline, bool _requiresQualification) external returns (uint256)",
+            "function submitBid(uint256 tenderId, uint64 bidAmount, string memory proposal) external",
+            "function closeTender(uint256 tenderId) external",
+            "function evaluateTender(uint256 tenderId) external",
+            "function cancelTender(uint256 tenderId) external",
+            "function getTenderInfo(uint256 tenderId) external view returns (string memory, string memory, uint256, uint256, uint8, address, uint256, uint256)",
+            "function getSupplierInfo(address supplier) external view returns (string memory, string memory, bool, bool, uint256, uint8)",
+            "function getBidInfo(uint256 tenderId, address bidder) external view returns (string memory, bool, uint256)",
+            "function getTenderBidders(uint256 tenderId) external view returns (address[])",
+            "function currentTenderId() external view returns (uint256)",
+            "function procurementAuthority() external view returns (address)",
+            "event TenderCreated(uint256 indexed tenderId, string title, uint256 budget, uint256 deadline)",
+            "event BidSubmitted(uint256 indexed tenderId, address indexed bidder, uint256 timestamp)",
+            "event TenderClosed(uint256 indexed tenderId, uint256 timestamp)",
+            "event TenderAwarded(uint256 indexed tenderId, address indexed winner, uint256 amount)",
+            "event SupplierRegistered(address indexed supplier, string name)",
+            "event SupplierQualified(address indexed supplier, uint8 score)"
+        ];
+
+        // Initialize Web3 connection
+        window.addEventListener('load', async () => {
+            // Wait for ethers.js to load
+            if (typeof ethers === 'undefined') {
+                let attempts = 0;
+                while (typeof ethers === 'undefined' && attempts < 50) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    attempts++;
+                }
+                if (typeof ethers === 'undefined') {
+                    updateConnectionStatus(false, '❌ Failed to load ethers.js library');
+                    showAlert('Failed to load ethers.js library. Please refresh the page.', 'error');
+                    return;
+                }
+            }
+            await initWeb3();
+        });
+
+        async function initWeb3() {
+            try {
+                if (typeof window.ethereum !== 'undefined') {
+                    // Don't auto-connect, just check if MetaMask is available
+                    updateConnectionStatus(false, '🔗 MetaMask detected - Ready to connect');
+                    document.getElementById('connectionPanel').style.display = 'block';
+                } else {
+                    updateConnectionStatus(false, '❌ Please install MetaMask wallet');
+                    showAlert('Please install MetaMask wallet to interact with this application.', 'error');
+                }
+            } catch (error) {
+                console.error('Web3 initialization failed:', error);
+                updateConnectionStatus(false, '❌ Initialization failed: ' + error.message);
+            }
+        }
+
+        async function connectWallet() {
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    showAlert('MetaMask is not installed. Please install MetaMask first.', 'error');
+                    return;
+                }
+
+                updateConnectionStatus(false, '🔄 Connecting to MetaMask...');
+
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                signer = provider.getSigner();
+                userAccount = await signer.getAddress();
+
+                contract = new ethers.Contract(contractAddress, contractABI, signer);
+
+                // Check network
+                const network = await provider.getNetwork();
+                if (network.chainId !== 11155111) { // Sepolia testnet
+                    showAlert('Please switch to Sepolia testnet in MetaMask.', 'error');
+                    updateConnectionStatus(false, '❌ Wrong network - Please switch to Sepolia');
+                    return;
+                }
+
+                updateConnectionStatus(true);
+                document.getElementById('connectionPanel').style.display = 'none';
+                showAlert('Wallet connected successfully!', 'success');
+
+                // Check if user is procurement authority
+                try {
+                    const authority = await contract.procurementAuthority();
+                    if (authority.toLowerCase() === userAccount.toLowerCase()) {
+                        showAuthorityFeatures();
+                    }
+                } catch (error) {
+                    console.log("Could not check authority status:", error);
+                }
+
+            } catch (error) {
+                console.error('Wallet connection failed:', error);
+                if (error.code === 4001) {
+                    updateConnectionStatus(false, '❌ Connection rejected by user');
+                    showAlert('Connection was rejected. Please try again and approve the connection.', 'error');
+                } else {
+                    updateConnectionStatus(false, '❌ Connection failed: ' + error.message);
+                    showAlert('Failed to connect wallet: ' + error.message, 'error');
+                }
+                document.getElementById('connectionPanel').style.display = 'block';
+            }
+        }
+
+        function updateConnectionStatus(connected, message = null) {
+            const status = document.getElementById('connectionStatus');
+            if (connected) {
+                status.className = 'connection-status connected';
+                status.innerHTML = `
+                    ✅ Connected: ${userAccount?.substring(0, 6)}...${userAccount?.substring(38)}
+                    <button class="btn btn-secondary" onclick="disconnectWallet()" style="margin-left: 12px; padding: 6px 12px; font-size: 12px;">
+                        Disconnect
+                    </button>
+                `;
+            } else {
+                status.className = 'connection-status disconnected';
+                status.innerHTML = message || '❌ Not connected to blockchain network';
+            }
+        }
+
+        function disconnectWallet() {
+            provider = null;
+            signer = null;
+            contract = null;
+            userAccount = null;
+
+            updateConnectionStatus(false, '🔗 Wallet disconnected - Ready to reconnect');
+            document.getElementById('connectionPanel').style.display = 'block';
+            showAlert('Wallet disconnected successfully.', 'info');
+        }
+
+        function switchTab(tabName) {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Add active class to clicked tab and corresponding content
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            // Load data for the active tab
+            if (tabName === 'tender') {
+                loadTenders();
+            } else if (tabName === 'bid') {
+                loadMyBids();
+            } else if (tabName === 'history') {
+                loadHistory();
+            }
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+
+            // Insert at the top of the active tab content
+            const activeContent = document.querySelector('.tab-content.active');
+            activeContent.insertBefore(alertDiv, activeContent.firstChild);
+
+            // Remove after 5 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        async function registerSupplier() {
+            if (!contract || !userAccount) {
+                showAlert('Please connect your wallet first.', 'error');
+                document.getElementById('connectionPanel').style.display = 'block';
+                return;
+            }
+
+            try {
+                const name = document.getElementById('supplierName').value.trim();
+                const category = document.getElementById('supplierCategory').value;
+
+                if (!name || !category) {
+                    showAlert('Please fill in all supplier information fields.', 'error');
+                    return;
+                }
+
+                showAlert('Registering supplier... Please confirm the transaction in MetaMask.', 'info');
+
+                const tx = await contract.registerSupplier(name, category);
+                showAlert('Transaction submitted. Waiting for blockchain confirmation...', 'info');
+
+                await tx.wait();
+                showAlert('✅ Supplier registration successful!', 'success');
+
+                // Clear form and check status
+                document.getElementById('supplierName').value = '';
+                document.getElementById('supplierCategory').value = '';
+                setTimeout(checkSupplierStatus, 2000);
+
+            } catch (error) {
+                console.error('Registration failed:', error);
+                // Check if it's an "already registered" error
+                if (error.reason && error.reason.includes('Already registered')) {
+                    showAlert('⚠️ You are already registered as a supplier. Check your status below.', 'info');
+                    checkSupplierStatus();
+                } else if (error.code === 4001) {
+                    showAlert('❌ Transaction cancelled by user.', 'error');
+                } else {
+                    showAlert('❌ Registration failed: ' + (error.reason || error.message), 'error');
+                }
+            }
+        }
+
+        async function checkSupplierStatus() {
+            if (!contract || !userAccount) {
+                showAlert('Please connect your wallet first.', 'error');
+                return;
+            }
+
+            try {
+                const supplierInfo = await contract.getSupplierInfo(userAccount);
+                const infoDiv = document.getElementById('supplierInfo');
+                const detailsDiv = document.getElementById('supplierDetails');
+
+                if (supplierInfo[2]) { // isRegistered
+                    const registrationDate = new Date(supplierInfo[4] * 1000).toLocaleDateString();
+                    detailsDiv.innerHTML = `
+                        <p><strong>Company Name:</strong> ${supplierInfo[0]}</p>
+                        <p><strong>Business Category:</strong> ${supplierInfo[1]}</p>
+                        <p><strong>Registration Status:</strong> <span class="status-badge status-open">Registered</span></p>
+                        <p><strong>Qualification Status:</strong> ${supplierInfo[3] ? '<span class="status-badge status-awarded">Qualified</span>' : '<span class="status-badge status-closed">Not Qualified</span>'}</p>
+                        <p><strong>Reputation Score:</strong> ${supplierInfo[5]}/100</p>
+                        <p><strong>Registration Date:</strong> ${registrationDate}</p>
+                    `;
+                    infoDiv.style.display = 'block';
+                } else {
+                    showAlert('You are not registered as a supplier yet.', 'info');
+                    infoDiv.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Status check failed:', error);
+                showAlert('Failed to check supplier status: ' + error.message, 'error');
+            }
+        }
+
+        async function createTender() {
+            if (!contract || !userAccount) {
+                showAlert('Please connect your wallet first.', 'error');
+                document.getElementById('connectionPanel').style.display = 'block';
+                return;
+            }
+
+            try {
+                const title = document.getElementById('tenderTitle').value.trim();
+                const description = document.getElementById('tenderDescription').value.trim();
+                const budgetStr = document.getElementById('tenderBudget').value;
+                const deadline = document.getElementById('tenderDeadline').value;
+                const requireQualification = document.getElementById('requireQualification').checked;
+
+                if (!title || !description || !budgetStr || !deadline) {
+                    showAlert('Please fill in all tender information fields.', 'error');
+                    return;
+                }
+
+                const budget = ethers.utils.parseEther(budgetStr);
+                const deadlineTimestamp = Math.floor(new Date(deadline).getTime() / 1000);
+
+                if (deadlineTimestamp <= Math.floor(Date.now() / 1000)) {
+                    showAlert('Deadline must be in the future.', 'error');
+                    return;
+                }
+
+                showAlert('Creating tender... Please confirm the transaction.', 'info');
+
+                const tx = await contract.createTender(title, description, budget, deadlineTimestamp, requireQualification);
+                showAlert('Transaction submitted. Waiting for confirmation...', 'info');
+
+                await tx.wait();
+                showAlert('Tender created successfully!', 'success');
+
+                // Clear form
+                document.getElementById('tenderTitle').value = '';
+                document.getElementById('tenderDescription').value = '';
+                document.getElementById('tenderBudget').value = '';
+                document.getElementById('tenderDeadline').value = '';
+                document.getElementById('requireQualification').checked = false;
+
+                setTimeout(loadTenders, 2000);
+
+            } catch (error) {
+                console.error('Tender creation failed:', error);
+                showAlert('Failed to create tender: ' + (error.reason || error.message), 'error');
+            }
+        }
+
+        async function loadTenders() {
+            if (!contract) return;
+
+            try {
+                const currentId = await contract.currentTenderId();
+                const tendersList = document.getElementById('tendersList');
+                tendersList.innerHTML = '<div class="loading-spinner"></div> Loading tenders...';
+
+                if (currentId.toNumber() === 0) {
+                    tendersList.innerHTML = '<div class="alert alert-info">No tenders found. Create the first tender!</div>';
+                    return;
+                }
+
+                const tenders = [];
+                for (let i = 1; i <= currentId.toNumber(); i++) {
+                    try {
+                        const tenderInfo = await contract.getTenderInfo(i);
+                        tenders.push({ id: i, info: tenderInfo });
+                    } catch (error) {
+                        console.error(`Failed to load tender ${i}:`, error);
+                    }
+                }
+
+                if (tenders.length === 0) {
+                    tendersList.innerHTML = '<div class="alert alert-info">No accessible tenders found.</div>';
+                    return;
+                }
+
+                const statusNames = ['Open', 'Closed', 'Evaluated', 'Awarded', 'Cancelled'];
+                const statusClasses = ['status-open', 'status-closed', 'status-evaluated', 'status-awarded', 'status-cancelled'];
+
+                tendersList.innerHTML = tenders.map(tender => {
+                    const info = tender.info;
+                    const deadline = new Date(info[3] * 1000);
+                    const isExpired = deadline < new Date();
+
+                    return `
+                        <div class="card">
+                            <h3>${info[0]} <span class="status-badge ${statusClasses[info[4]]}">${statusNames[info[4]]}</span></h3>
+                            <p><strong>Description:</strong> ${info[1]}</p>
+                            <p><strong>Budget:</strong> ${ethers.utils.formatEther(info[2])} ETH</p>
+                            <p><strong>Deadline:</strong> ${deadline.toLocaleString()} ${isExpired ? '⚠️ Expired' : ''}</p>
+                            <p><strong>Number of Bids:</strong> ${info[7]}</p>
+                            ${info[5] !== ethers.constants.AddressZero ? `<p><strong>Winner:</strong> ${info[5]}</p>` : ''}
+                            ${info[6] > 0 ? `<p><strong>Winning Bid:</strong> ${ethers.utils.formatEther(info[6])} ETH</p>` : ''}
+                            <p><strong>Tender ID:</strong> #${tender.id}</p>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Failed to load tenders:', error);
+                document.getElementById('tendersList').innerHTML = '<div class="alert alert-error">Failed to load tenders: ' + error.message + '</div>';
+            }
+        }
+
+        async function submitBid() {
+            if (!contract || !userAccount) {
+                showAlert('Please connect your wallet first.', 'error');
+                document.getElementById('connectionPanel').style.display = 'block';
+                return;
+            }
+
+            try {
+                const tenderIdStr = document.getElementById('bidTenderId').value;
+                const bidAmountStr = document.getElementById('bidAmount').value;
+                const proposal = document.getElementById('bidProposal').value.trim();
+
+                if (!tenderIdStr || !bidAmountStr || !proposal) {
+                    showAlert('Please fill in all bid information fields.', 'error');
+                    return;
+                }
+
+                const tenderId = parseInt(tenderIdStr);
+                const bidAmountEth = parseFloat(bidAmountStr);
+
+                if (bidAmountEth <= 0) {
+                    showAlert('Bid amount must be greater than 0.', 'error');
+                    return;
+                }
+
+                // uint64 max is 18446744073709551615
+                // For amounts in wei, max is about 18.446 ETH
+                // We'll accept smaller amounts to fit in uint64
+                if (bidAmountEth > 0.018) {
+                    showAlert('Bid amount too large for encrypted storage. Maximum is 0.018 ETH.', 'error');
+                    return;
+                }
+
+                // Convert to wei carefully to fit in uint64
+                const bidAmountWei = ethers.BigNumber.from(Math.floor(bidAmountEth * 1e18).toString());
+
+                showAlert('Submitting bid... Please confirm the transaction in MetaMask.', 'info');
+
+                const tx = await contract.submitBid(tenderId, bidAmountWei, proposal);
+                showAlert('Transaction submitted. Waiting for confirmation...', 'info');
+
+                await tx.wait();
+                showAlert('Bid submitted successfully! Your bid amount is encrypted and confidential.', 'success');
+
+                // Clear form
+                document.getElementById('bidTenderId').value = '';
+                document.getElementById('bidAmount').value = '';
+                document.getElementById('bidProposal').value = '';
+
+                setTimeout(loadMyBids, 2000);
+
+            } catch (error) {
+                console.error('Bid submission failed:', error);
+                showAlert('Failed to submit bid: ' + (error.reason || error.message), 'error');
+            }
+        }
+
+        async function loadMyBids() {
+            if (!contract || !userAccount) return;
+
+            try {
+                const bidsList = document.getElementById('bidsList');
+                bidsList.innerHTML = '<div class="loading-spinner"></div> Loading your bids...';
+
+                const currentId = await contract.currentTenderId();
+                const myBids = [];
+
+                for (let i = 1; i <= currentId.toNumber(); i++) {
+                    try {
+                        const bidInfo = await contract.getBidInfo(i, userAccount);
+                        if (bidInfo[1]) { // submitted
+                            const tenderInfo = await contract.getTenderInfo(i);
+                            myBids.push({
+                                tenderId: i,
+                                tenderTitle: tenderInfo[0],
+                                proposal: bidInfo[0],
+                                timestamp: new Date(bidInfo[2] * 1000),
+                                tenderStatus: tenderInfo[4]
+                            });
+                        }
+                    } catch (error) {
+                        // Skip if bid doesn't exist or access denied
+                    }
+                }
+
+                if (myBids.length === 0) {
+                    bidsList.innerHTML = '<div class="alert alert-info">You have not submitted any bids yet.</div>';
+                    return;
+                }
+
+                const statusNames = ['Open', 'Closed', 'Evaluated', 'Awarded', 'Cancelled'];
+
+                bidsList.innerHTML = myBids.map(bid => `
+                    <div class="card">
+                        <h3>Tender: ${bid.tenderTitle}</h3>
+                        <p><strong>Tender ID:</strong> #${bid.tenderId}</p>
+                        <p><strong>Your Proposal:</strong> ${bid.proposal}</p>
+                        <p><strong>Submission Time:</strong> ${bid.timestamp.toLocaleString()}</p>
+                        <p><strong>Status:</strong> <span class="status-badge status-open">${statusNames[bid.tenderStatus]}</span></p>
+                        <p><strong>Bid Amount:</strong> 🔒 Encrypted (Private)</p>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Failed to load bids:', error);
+                document.getElementById('bidsList').innerHTML = '<div class="alert alert-error">Failed to load your bids: ' + error.message + '</div>';
+            }
+        }
+
+        async function loadHistory() {
+            if (!contract) return;
+
+            try {
+                const historyList = document.getElementById('historyList');
+                historyList.innerHTML = '<div class="loading-spinner"></div> Loading transaction history...';
+
+                // Load all tenders for history
+                await loadAllTenders();
+
+            } catch (error) {
+                console.error('Failed to load history:', error);
+                document.getElementById('historyList').innerHTML = '<div class="alert alert-error">Failed to load history: ' + error.message + '</div>';
+            }
+        }
+
+        async function loadAllTenders() {
+            const historyList = document.getElementById('historyList');
+            await loadTenders();
+
+            // Copy tenders to history
+            const tendersList = document.getElementById('tendersList');
+            historyList.innerHTML = tendersList.innerHTML || '<div class="alert alert-info">No historical data available.</div>';
+        }
+
+        function showAuthorityFeatures() {
+            // Add authority-specific UI elements or notifications
+            showAlert('You are logged in as the Procurement Authority with administrative privileges.', 'info');
+        }
+
+        // Auto-refresh data every 30 seconds
+        setInterval(() => {
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab) {
+                const tabId = activeTab.id;
+                if (tabId === 'tender') {
+                    loadTenders();
+                } else if (tabId === 'bid') {
+                    loadMyBids();
+                } else if (tabId === 'history') {
+                    loadHistory();
+                }
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
