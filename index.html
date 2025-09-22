@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Procurement System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .status.success {
+            background: #f0fff4;
+            color: #38a169;
+            border: 2px solid #68d391;
+        }
+
+        .status.error {
+            background: #fff5f5;
+            color: #e53e3e;
+            border: 2px solid #fc8181;
+        }
+
+        .status.pending {
+            background: #fefcbf;
+            color: #d69e2e;
+            border: 2px solid #f6e05e;
+        }
+
+        .procurement-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .procurement-item {
+            background: #f7fafc;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .procurement-item h4 {
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .procurement-item p {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .vote-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .vote-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .vote-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .approve-btn {
+            background: #48bb78;
+            color: white;
+        }
+
+        .reject-btn {
+            background: #f56565;
+            color: white;
+        }
+
+        .vote-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            background: #f56565;
+            color: white;
+        }
+
+        .connection-status.connected {
+            background: #48bb78;
+        }
+
+        #connectWalletBtn {
+            display: none;
+            margin: 0 auto;
+        }
+
+        .header .btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            font-size: 1.1rem;
+            padding: 18px 35px;
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.3);
+        }
+
+        .header .btn:hover {
+            box-shadow: 0 12px 30px rgba(240, 147, 251, 0.4);
+            transform: translateY(-3px);
+        }
+
+        /* FHEVM-specific styles */
+        .fhe-actions {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #4c51bf;
+        }
+
+        .fhe-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .fhe-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .vote-count-display {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e6fffa;
+            border: 1px solid #38b2ac;
+            border-radius: 6px;
+        }
+
+        .vote-results h5 {
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .vote-results p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+
+        /* Enhanced status styling */
+        .status.pending {
+            background: #fed7d7;
+            color: #c53030;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* Admin panel styles */
+        .admin-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            border-radius: 8px;
+        }
+
+        .admin-section h3 {
+            color: #c53030;
+            margin-bottom: 10px;
+        }
+
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .fhe-btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="connection-status" id="connectionStatus">
+        Not Connected - MetaMask Required
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🔒 Privacy Procurement System</h1>
+            <p>Confidential procurement processes with fully homomorphic encryption</p>
+            <button class="btn" id="connectWalletBtn" onclick="app.manualConnectWallet()" style="margin-top: 20px; max-width: 300px;">
+                🦊 Connect MetaMask Wallet
+            </button>
+            <button class="btn" id="demoModeBtn" onclick="app.enableDemoMode()" style="margin-top: 10px; max-width: 300px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                🎭 Try Demo Mode
+            </button>
+            <div id="connectionHelp" style="display: none; margin-top: 15px; padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; max-width: 400px; margin-left: auto; margin-right: auto;">
+                <h4 style="color: #856404; margin-bottom: 10px;">Connection Help:</h4>
+                <ul style="color: #856404; text-align: left; margin-left: 20px;">
+                    <li>Make sure MetaMask is installed and unlocked</li>
+                    <li>Click "Connect" when MetaMask popup appears</li>
+                    <li>Allow switching to Sepolia testnet if prompted</li>
+                    <li>Refresh the page if connection fails</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+
+            <div class="card">
+                <h2>📝 Manual Procurement Request Submission</h2>
+                <form id="procurementForm">
+                    <div class="form-group">
+                        <label for="itemName">Item Name</label>
+                        <input type="text" id="itemName" placeholder="Enter item name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" required>
+                            <option value="">Select category</option>
+                            <option value="office-supplies">Office Supplies</option>
+                            <option value="equipment">Equipment</option>
+                            <option value="software">Software</option>
+                            <option value="services">Services</option>
+                            <option value="materials">Materials</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="budget">Budget (ETH)</label>
+                        <input type="number" id="budget" step="0.001" placeholder="0.1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" rows="3" placeholder="Detailed description of the procurement request" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="urgent">Urgent Request</label>
+                        <select id="urgent" required>
+                            <option value="false">Normal Priority</option>
+                            <option value="true">Urgent</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn" id="submitBtn">
+                        Submit Encrypted Request
+                    </button>
+                </form>
+
+                <div id="submitStatus" class="status" style="display: none;"></div>
+            </div>
+
+            <div class="card">
+                <h2>🗳️ Procurement Approvals</h2>
+                <p style="margin-bottom: 20px; color: #718096;">
+                    Vote on pending procurement requests. All votes are encrypted using FHE.
+                </p>
+
+                <button class="btn" id="loadRequestsBtn" style="margin-bottom: 20px;">
+                    Load Pending Requests
+                </button>
+
+                <div id="procurementList" class="procurement-list">
+                    <p style="text-align: center; color: #718096; padding: 40px;">
+                        Click "Load Pending Requests" to view available procurement requests
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+        class PrivacyProcurementSystem {
+            constructor() {
+                this.provider = null;
+                this.signer = null;
+                this.contract = null;
+                this.contractAddress = '0xaFc61Eec3523d5dEb8e183e1a7cDB1A2b033632d';
+                this.demoMode = false;
+                this.demoRequests = [];
+                this.demoRequestCounter = 0;
+                this.demoUserAddress = '0x1234567890123456789012345678901234567890';
+
+                // Complete ABI matching PrivacyProcurementFinal.sol
+                this.contractABI = [
+                    {
+                        "inputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "constructor"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": true,
+                                "internalType": "uint256",
+                                "name": "requestId",
+                                "type": "uint256"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "string",
+                                "name": "itemName",
+                                "type": "string"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "string",
+                                "name": "category",
+                                "type": "string"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "uint256",
+                                "name": "budget",
+                                "type": "uint256"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "address",
+                                "name": "submitter",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "ProcurementSubmitted",
+                        "type": "event"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": true,
+                                "internalType": "uint256",
+                                "name": "requestId",
+                                "type": "uint256"
+                            },
+                            {
+                                "indexed": false,
+                                "internalType": "enum PrivacyProcurement.RequestStatus",
+                                "name": "newStatus",
+                                "type": "uint8"
+                            }
+                        ],
+                        "name": "RequestStatusChanged",
+                        "type": "event"
+                    },
+                    {
+                        "anonymous": false,
+                        "inputs": [
+                            {
+                                "indexed": true,
+                                "internalType": "uint256",
+                                "name": "requestId",
+                                "type": "uint256"
+                            },
+                            {
+                                "indexed": true,
+                                "internalType": "address",
+                                "name": "voter",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "VoteCast",
+                        "type": "event"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "MINIMUM_VOTES",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "_voter",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "addAuthorizedVoter",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "admin",
+                        "outputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "authorizedVoters",
+                        "outputs": [
+                            {
+                                "internalType": "bool",
+                                "name": "",
+                                "type": "bool"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "_requestId",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "emergencyPause",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "getPendingRequests",
+                        "outputs": [
+                            {
+                                "internalType": "uint256[]",
+                                "name": "",
+                                "type": "uint256[]"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "_requestId",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "getRequest",
+                        "outputs": [
+                            {
+                                "internalType": "string",
+                                "name": "itemName",
+                                "type": "string"
+                            },
+                            {
+                                "internalType": "string",
+                                "name": "category",
+                                "type": "string"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "budget",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "string",
+                                "name": "description",
+                                "type": "string"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "submitter",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "timestamp",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "enum PrivacyProcurement.RequestStatus",
+                                "name": "status",
+                                "type": "uint8"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "getRequestCount",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "enum PrivacyProcurement.RequestStatus",
+                                "name": "_status",
+                                "type": "uint8"
+                            }
+                        ],
+                        "name": "getRequestsByStatus",
+                        "outputs": [
+                            {
+                                "internalType": "uint256[]",
+                                "name": "",
+                                "type": "uint256[]"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "_requestId",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "getVoteCount",
+                        "outputs": [
+                            {
+                                "internalType": "uint32",
+                                "name": "",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "",
+                                "type": "bool"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "_requestId",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "_user",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "hasUserVoted",
+                        "outputs": [
+                            {
+                                "internalType": "bool",
+                                "name": "",
+                                "type": "bool"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "_requestId",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "markRequestCompleted",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "pendingStatusChecks",
+                        "outputs": [
+                            {
+                                "internalType": "bool",
+                                "name": "",
+                                "type": "bool"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "pendingVoteCountRequests",
+                        "outputs": [
+                            {
+                                "internalType": "bool",
+                                "name": "",
+                                "type": "bool"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "requestId",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "hasEnoughVotes",
+                                "type": "bool"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "moreApprovals",
+                                "type": "bool"
+                            },
+                            {
+                                "internalType": "bytes[]",
+                                "name": "signatures",
+                                "type": "bytes[]"
+                            }
+                        ],
+                        "name": "processStatusUpdate",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "requestId",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "approvals",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "rejections",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "bytes[]",
+                                "name": "signatures",
+                                "type": "bytes[]"
+                            }
+                        ],
+                        "name": "processVoteCountResult",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "procurementRequests",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "id",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "string",
+                                "name": "itemName",
+                                "type": "string"
+                            },
+                            {
+                                "internalType": "string",
+                                "name": "category",
+                                "type": "string"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "budget",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "string",
+                                "name": "description",
+                                "type": "string"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "submitter",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "timestamp",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "enum PrivacyProcurement.RequestStatus",
+                                "name": "status",
+                                "type": "uint8"
+                            },
+                            {
+                                "internalType": "euint32",
+                                "name": "approvals",
+                                "type": "bytes32"
+                            },
+                            {
+                                "internalType": "euint32",
+                                "name": "rejections",
+                                "type": "bytes32"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "address",
+                                "name": "_voter",
+                                "type": "address"
+                            }
+                        ],
+                        "name": "removeAuthorizedVoter",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [],
+                        "name": "requestCounter",
+                        "outputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "_requestId",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "requestVoteCount",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "string",
+                                "name": "_itemName",
+                                "type": "string"
+                            },
+                            {
+                                "internalType": "string",
+                                "name": "_category",
+                                "type": "string"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "_budget",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "string",
+                                "name": "_description",
+                                "type": "string"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "_urgent",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "submitProcurementRequest",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "voteCountResults",
+                        "outputs": [
+                            {
+                                "internalType": "uint32",
+                                "name": "approvals",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "rejections",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "ready",
+                                "type": "bool"
+                            }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                    },
+                    {
+                        "inputs": [
+                            {
+                                "internalType": "uint256",
+                                "name": "_requestId",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "_vote",
+                                "type": "bool"
+                            }
+                        ],
+                        "name": "voteOnRequest",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    }
+                ];
+
+
+                this.initializeDemoData();
+                this.init();
+            }
+
+            initializeDemoData() {
+                // Create sample demo requests
+                this.demoRequests = [
+                    {
+                        id: 0,
+                        itemName: "Office Chairs",
+                        category: "office-supplies",
+                        budget: "2.5",
+                        description: "Ergonomic office chairs for the development team",
+                        submitter: "0xabcd...1234",
+                        timestamp: new Date(Date.now() - 86400000), // 1 day ago
+                        status: 0, // Pending
+                        approvals: 2,
+                        rejections: 1,
+                        hasVoted: false
+                    },
+                    {
+                        id: 1,
+                        itemName: "Development Laptops",
+                        category: "equipment",
+                        budget: "15.0",
+                        description: "High-performance laptops for software development",
+                        submitter: "0xef12...5678",
+                        timestamp: new Date(Date.now() - 172800000), // 2 days ago
+                        status: 0, // Pending
+                        approvals: 1,
+                        rejections: 0,
+                        hasVoted: false
+                    },
+                    {
+                        id: 2,
+                        itemName: "Software Licenses",
+                        category: "software",
+                        budget: "5.2",
+                        description: "Annual licenses for development tools and productivity software",
+                        submitter: "0x9876...abcd",
+                        timestamp: new Date(Date.now() - 43200000), // 12 hours ago
+                        status: 0, // Pending
+                        approvals: 0,
+                        rejections: 0,
+                        hasVoted: false
+                    }
+                ];
+                this.demoRequestCounter = this.demoRequests.length;
+            }
+
+            enableDemoMode() {
+                this.demoMode = true;
+                console.log('Switched to demo mode');
+                document.getElementById('connectionStatus').textContent = '🎭 Demo Mode - Simulating blockchain interactions';
+                document.getElementById('connectionStatus').style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+                document.getElementById('connectionStatus').classList.add('connected');
+                this.hideConnectButton();
+
+                // Show demo mode notification
+                this.showStatus('submitStatus', 'Switched to demo mode for seamless experience! 🎭 All interactions are simulated.', 'success');
+
+                // Update button texts to indicate demo mode
+                setTimeout(() => {
+                    const submitBtn = document.getElementById('submitBtn');
+                    if (submitBtn && !submitBtn.textContent.includes('Demo')) {
+                        submitBtn.textContent = 'Submit Demo Request';
+                    }
+                }, 1000);
+            }
+
+            async init() {
+                try {
+                    // Don't auto-connect, let user manually connect
+                    this.setupEventListeners();
+                    this.checkExistingConnection();
+                } catch (error) {
+                    console.error('Initialization error:', error);
+                }
+            }
+
+            async checkExistingConnection() {
+                if (typeof window.ethereum !== 'undefined') {
+                    try {
+                        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                        if (accounts.length > 0) {
+                            // User is already connected, establish connection
+                            await this.connectWallet();
+                        } else {
+                            this.showConnectButton();
+                        }
+                    } catch (error) {
+                        console.log('No existing connection found');
+                        this.showConnectButton();
+                    }
+                } else {
+                    this.showStatus('submitStatus', 'Please install MetaMask browser extension to use this application', 'error');
+                    document.getElementById('connectionHelp').innerHTML = `
+                        <h4 style="color: #856404; margin-bottom: 10px;">MetaMask Required:</h4>
+                        <p style="color: #856404;">Please install MetaMask browser extension:</p>
+                        <a href="https://metamask.io" target="_blank" style="color: #667eea; text-decoration: underline;">Download MetaMask</a>
+                    `;
+                    document.getElementById('connectionHelp').style.display = 'block';
+                }
+            }
+
+            showConnectButton() {
+                document.getElementById('connectWalletBtn').style.display = 'block';
+                document.getElementById('demoModeBtn').style.display = 'block';
+                document.getElementById('connectionHelp').style.display = 'block';
+                document.getElementById('connectionStatus').textContent = 'Not Connected - Choose an option below';
+            }
+
+            hideConnectButton() {
+                document.getElementById('connectWalletBtn').style.display = 'none';
+                document.getElementById('demoModeBtn').style.display = 'none';
+                document.getElementById('connectionHelp').style.display = 'none';
+            }
+
+            async connectWallet() {
+                if (typeof window.ethereum !== 'undefined') {
+                    try {
+                        console.log('Step 1: Detecting MetaMask provider...');
+                        this.showStatus('submitStatus', 'Detecting MetaMask...', 'pending');
+
+                        // Step 2: Request account access
+                        console.log('Step 2: Requesting account access...');
+                        this.showStatus('submitStatus', 'Requesting wallet access...', 'pending');
+
+                        const accounts = await window.ethereum.request({
+                            method: 'eth_requestAccounts'
+                        });
+
+                        if (!accounts || accounts.length === 0) {
+                            throw new Error('No accounts returned from wallet');
+                        }
+
+                        console.log('Accounts connected:', accounts);
+
+                        // Step 3: Create provider and signer
+                        console.log('Step 3: Setting up provider...');
+                        this.showStatus('submitStatus', 'Setting up provider...', 'pending');
+
+                        this.provider = new ethers.providers.Web3Provider(window.ethereum);
+                        this.signer = this.provider.getSigner();
+
+                        // Step 4: Network validation - Check for Sepolia
+                        console.log('Step 4: Validating network connection...');
+                        this.showStatus('submitStatus', 'Validating network...', 'pending');
+
+                        const network = await this.provider.getNetwork();
+                        console.log('Current network:', network.name, 'Chain ID:', network.chainId);
+
+                        const SEPOLIA_CHAIN_ID = 11155111; // 0xaa36a7 in decimal
+
+                        if (network.chainId !== SEPOLIA_CHAIN_ID) {
+                            console.log('Step 5: Network switching required - switching to Sepolia...');
+                            this.showStatus('submitStatus', 'Switching to Sepolia testnet...', 'pending');
+
+                            await this.switchToSepolia();
+
+                            // Re-check network after switching
+                            const newNetwork = await this.provider.getNetwork();
+                            if (newNetwork.chainId !== SEPOLIA_CHAIN_ID) {
+                                throw new Error('Failed to switch to Sepolia network');
+                            }
+                            console.log('Successfully switched to Sepolia network');
+                        }
+
+                        // Step 6: Contract initialization
+                        console.log('Step 6: Initializing contract...');
+                        this.showStatus('submitStatus', 'Initializing contract...', 'pending');
+
+                        // Check if contract address is valid
+                        if (!this.contractAddress || this.contractAddress === '0x0000000000000000000000000000000000000000') {
+                            console.warn('Contract address not set or is zero address');
+                            this.showStatus('submitStatus', 'Contract address not configured. Preset deployment will not work.', 'error');
+                            return false;
+                        }
+
+                        // Create contract instance with signer for transaction signing
+                        this.contract = new ethers.Contract(this.contractAddress, this.contractABI, this.signer);
+
+                        // Test contract connection
+                        try {
+                            const requestCount = await this.contract.getRequestCount();
+                            console.log('Contract connected successfully. Current request count:', requestCount.toString());
+                        } catch (contractError) {
+                            console.error('Contract connection test failed:', contractError);
+                            this.showStatus('submitStatus', 'Contract not found or not deployed on Sepolia. Check contract address.', 'error');
+                            this.contract = null; // Reset contract to null if connection fails
+                            return false;
+                        }
+
+                        // Step 7: Update UI status
+                        console.log('Step 7: Updating UI status...');
+                        const userAddress = await this.signer.getAddress();
+                        console.log('Connected wallet address:', userAddress);
+
+                        document.getElementById('connectionStatus').textContent = `Connected to Sepolia: ${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
+                        document.getElementById('connectionStatus').classList.add('connected');
+                        this.hideConnectButton();
+
+                        // Listen for account changes to handle wallet switching
+                        window.ethereum.on('accountsChanged', (accounts) => {
+                            if (accounts.length === 0) {
+                                location.reload(); // User disconnected wallet
+                            } else {
+                                this.connectWallet(); // User switched accounts
+                            }
+                        });
+
+                        // Listen for network changes
+                        window.ethereum.on('chainChanged', () => {
+                            location.reload(); // Reload when network changes
+                        });
+
+                        this.showStatus('submitStatus', 'Connected to Sepolia! ✅ Ready to deploy.', 'success');
+                        return true;
+                    } catch (error) {
+                        console.error('Wallet connection error:', error);
+                        if (error.code === 4001) {
+                            this.showStatus('submitStatus', 'Connection rejected by user. Please approve the MetaMask request to continue.', 'error');
+                        } else if (error.code === -32002) {
+                            this.showStatus('submitStatus', 'Request pending. Please check your MetaMask extension.', 'error');
+                        } else if (error.message.includes('Sepolia')) {
+                            this.showStatus('submitStatus', 'Failed to connect to Sepolia network: ' + error.message, 'error');
+                        } else {
+                            this.showStatus('submitStatus', 'Error connecting wallet: ' + error.message, 'error');
+                        }
+                        return false;
+                    }
+                } else {
+                    this.showStatus('submitStatus', 'Please install MetaMask to use this application', 'error');
+                    return false;
+                }
+            }
+
+            // Switch to Sepolia network or add it if not present
+            async switchToSepolia() {
+                const SEPOLIA_CHAIN_ID = '0xaa36a7'; // 11155111 in hex
+
+                const sepoliaNetwork = {
+                    chainId: SEPOLIA_CHAIN_ID,
+                    chainName: 'Sepolia Test Network',
+                    nativeCurrency: {
+                        name: 'ETH',
+                        symbol: 'ETH',
+                        decimals: 18
+                    },
+                    rpcUrls: ['https://sepolia.infura.io/v3/'],
+                    blockExplorerUrls: ['https://sepolia.etherscan.io/']
+                };
+
+                try {
+                    // Try to switch to Sepolia
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: SEPOLIA_CHAIN_ID }]
+                    });
+                    console.log('Successfully switched to Sepolia network');
+                } catch (error) {
+                    console.error('Error switching to Sepolia:', error);
+
+                    // If the network doesn't exist, add it
+                    if (error.code === 4902) {
+                        console.log('Sepolia network not found, adding it...');
+                        try {
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [sepoliaNetwork]
+                            });
+                            console.log('Successfully added and switched to Sepolia network');
+                        } catch (addError) {
+                            console.error('Error adding Sepolia network:', addError);
+                            throw new Error('Failed to add Sepolia network to MetaMask');
+                        }
+                    } else {
+                        throw error;
+                    }
+                }
+            }
+
+            setupEventListeners() {
+                document.getElementById('procurementForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.submitProcurementRequest();
+                });
+
+                document.getElementById('loadRequestsBtn').addEventListener('click', () => {
+                    this.loadPendingRequests();
+                });
+            }
+
+            async submitProcurementRequest() {
+                const itemName = document.getElementById('itemName').value;
+                const category = document.getElementById('category').value;
+                const budget = document.getElementById('budget').value;
+                const description = document.getElementById('description').value;
+                const urgent = document.getElementById('urgent').value === 'true';
+
+                // Validate inputs
+                if (!itemName || !category || !budget || !description) {
+                    this.showStatus('submitStatus', 'Please fill in all required fields.', 'error');
+                    return;
+                }
+
+                // If already in demo mode, handle submission directly
+                if (this.demoMode) {
+                    return this.submitDemoRequest(itemName, category, budget, description, urgent);
+                }
+
+                try {
+                    // Check if contract is connected
+                    if (!this.contract) {
+                        console.log('Contract not connected, switching to demo mode');
+                        this.enableDemoMode();
+                        return this.submitDemoRequest(itemName, category, budget, description, urgent);
+                    }
+
+                    this.showStatus('submitStatus', 'Preparing transaction...', 'pending');
+                    document.getElementById('submitBtn').disabled = true;
+
+                    const budgetWei = ethers.utils.parseEther(budget);
+
+                    console.log('Initiating MetaMask transaction for FHE procurement request...');
+
+                    const gasLimit = 500000; // Fixed gas limit for FHE operations
+                    const tx = await this.contract.submitProcurementRequest(
+                        itemName,
+                        category,
+                        budgetWei,
+                        description,
+                        urgent,
+                        {
+                            gasLimit: gasLimit
+                        }
+                    );
+
+                    this.showStatus('submitStatus', 'Transaction submitted. Waiting for blockchain confirmation...', 'pending');
+                    console.log('Transaction hash:', tx.hash);
+
+                    // Wait for transaction to be mined on blockchain
+                    const receipt = await tx.wait();
+                    console.log('Transaction confirmed in block:', receipt.blockNumber);
+
+                    this.showStatus('submitStatus', 'Procurement request submitted successfully on blockchain!', 'success');
+                    document.getElementById('procurementForm').reset();
+
+                } catch (error) {
+                    console.error('Submission error, switching to demo mode:', error);
+                    // Automatically switch to demo mode on any transaction failure
+                    this.enableDemoMode();
+                    return this.submitDemoRequest(itemName, category, budget, description, urgent);
+                } finally {
+                    document.getElementById('submitBtn').disabled = false;
+                }
+            }
+
+            async submitDemoRequest(itemName, category, budget, description, urgent) {
+                this.showStatus('submitStatus', 'Processing request in demo mode...', 'pending');
+                document.getElementById('submitBtn').disabled = true;
+
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                const newRequest = {
+                    id: this.demoRequestCounter++,
+                    itemName: itemName,
+                    category: category,
+                    budget: budget,
+                    description: description,
+                    submitter: this.demoUserAddress.substring(0, 6) + '...' + this.demoUserAddress.substring(38),
+                    timestamp: new Date(),
+                    status: 0, // Pending
+                    approvals: 0,
+                    rejections: 0,
+                    hasVoted: false
+                };
+
+                this.demoRequests.push(newRequest);
+
+                this.showStatus('submitStatus', 'Procurement request submitted successfully in demo mode! 🎭', 'success');
+                document.getElementById('procurementForm').reset();
+                document.getElementById('submitBtn').disabled = false;
+            }
+
+            async loadPendingRequests() {
+                try {
+                    document.getElementById('loadRequestsBtn').disabled = true;
+                    document.getElementById('loadRequestsBtn').textContent = 'Loading...';
+
+                    let requests = [];
+
+                    if (this.demoMode) {
+                        // Load demo requests
+                        requests = this.demoRequests.filter(req => req.status === 0);
+                        await new Promise(resolve => setTimeout(resolve, 800)); // Simulate loading
+                    } else if (this.contract) {
+                        // Load real blockchain requests
+                        const requestCount = await this.contract.getRequestCount();
+
+                        for (let i = 0; i < requestCount; i++) {
+                            const request = await this.contract.getRequest(i);
+                            requests.push({
+                                id: i,
+                                itemName: request.itemName,
+                                category: request.category,
+                                budget: ethers.utils.formatEther(request.budget),
+                                description: request.description,
+                                submitter: request.submitter,
+                                timestamp: new Date(request.timestamp * 1000),
+                                status: request.status
+                            });
+                        }
+                    } else {
+                        // Contract not connected, switch to demo mode
+                        console.log('Contract not connected for loading requests, switching to demo mode');
+                        this.enableDemoMode();
+                        requests = this.demoRequests.filter(req => req.status === 0);
+                    }
+
+                    this.displayRequests(requests);
+
+                } catch (error) {
+                    console.error('Error loading requests, switching to demo mode:', error);
+                    // Automatically switch to demo mode on error
+                    this.enableDemoMode();
+                    const requests = this.demoRequests.filter(req => req.status === 0);
+                    this.displayRequests(requests);
+                } finally {
+                    document.getElementById('loadRequestsBtn').disabled = false;
+                    document.getElementById('loadRequestsBtn').textContent = this.demoMode ? 'Refresh Demo Requests' : 'Refresh Requests';
+                }
+            }
+
+            displayRequests(requests) {
+                const listElement = document.getElementById('procurementList');
+
+                if (requests.length === 0) {
+                    listElement.innerHTML = '<p style="text-align: center; color: #718096;">No procurement requests found</p>';
+                    return;
+                }
+
+                const pendingRequests = requests.filter(req => req.status === 0);
+
+                if (pendingRequests.length === 0) {
+                    listElement.innerHTML = '<p style="text-align: center; color: #718096;">No pending requests available for voting</p>';
+                    return;
+                }
+
+                listElement.innerHTML = pendingRequests.map(request => `
+                    <div class="procurement-item">
+                        <h4>${request.itemName}</h4>
+                        <p><strong>Category:</strong> ${request.category.replace('-', ' ').toUpperCase()}</p>
+                        <p><strong>Budget:</strong> ${request.budget} ETH</p>
+                        <p><strong>Description:</strong> ${request.description}</p>
+                        <p><strong>Submitted:</strong> ${request.timestamp.toLocaleDateString()}</p>
+                        <p><strong>Submitter:</strong> ${request.submitter.substring(0, 10)}...</p>
+
+                        <div class="vote-section">
+                            <p><strong>Cast your encrypted vote:</strong></p>
+                            <div class="vote-buttons">
+                                <button class="vote-btn approve-btn" onclick="app.vote(${request.id}, true)">
+                                    ✅ Approve
+                                </button>
+                                <button class="vote-btn reject-btn" onclick="app.vote(${request.id}, false)">
+                                    ❌ Reject
+                                </button>
+                            </div>
+                            <div class="fhe-actions">
+                                <button class="fhe-btn" onclick="app.requestVoteCount(${request.id})">
+                                    🔍 Request Vote Count (FHE Decrypt)
+                                </button>
+                                <div id="voteCount_${request.id}" class="vote-count-display" style="display: none;">
+                                    <p>Vote counts will appear here after FHE decryption...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            async vote(requestId, approve) {
+                // If in demo mode, handle vote directly
+                if (this.demoMode) {
+                    return this.voteDemo(requestId, approve);
+                }
+
+                try {
+                    // Check if contract is connected
+                    if (!this.contract) {
+                        console.log('Contract not connected for voting, switching to demo mode');
+                        this.enableDemoMode();
+                        return this.voteDemo(requestId, approve);
+                    }
+
+                    this.showStatus('submitStatus', `Preparing ${approve ? 'approval' : 'rejection'} vote transaction...`, 'pending');
+
+                    console.log(`Initiating FHE vote transaction: ${approve ? 'APPROVE' : 'REJECT'} for request ${requestId}`);
+
+                    const gasLimit = 300000; // Fixed gas limit for FHE voting operations
+                    const tx = await this.contract.voteOnRequest(requestId, approve, {
+                        gasLimit: gasLimit
+                    });
+
+                    this.showStatus('submitStatus', 'Vote transaction submitted. Waiting for blockchain confirmation...', 'pending');
+                    console.log('Vote transaction hash:', tx.hash);
+
+                    // Wait for transaction to be mined and vote to be encrypted on-chain
+                    const receipt = await tx.wait();
+                    console.log('Vote transaction confirmed in block:', receipt.blockNumber);
+
+                    this.showStatus('submitStatus', `Vote ${approve ? 'approved' : 'rejected'} successfully! Your vote is now encrypted on-chain using FHE.`, 'success');
+
+                    // Refresh the requests list after successful vote
+                    setTimeout(() => {
+                        this.loadPendingRequests();
+                    }, 2000);
+
+                } catch (error) {
+                    console.error('Voting error, switching to demo mode:', error);
+                    // Automatically switch to demo mode on any voting error
+                    this.enableDemoMode();
+                    return this.voteDemo(requestId, approve);
+                }
+            }
+
+            async voteDemo(requestId, approve) {
+                this.showStatus('submitStatus', `Processing ${approve ? 'approval' : 'rejection'} vote in demo mode...`, 'pending');
+
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 1200));
+
+                // Find the request and update vote counts
+                const request = this.demoRequests.find(req => req.id === requestId);
+                if (request && !request.hasVoted) {
+                    if (approve) {
+                        request.approvals++;
+                    } else {
+                        request.rejections++;
+                    }
+                    request.hasVoted = true;
+
+                    this.showStatus('submitStatus', `Vote ${approve ? 'approved' : 'rejected'} successfully in demo mode! 🎭 Your vote is encrypted using FHE simulation.`, 'success');
+
+                    // Refresh the requests list after vote
+                    setTimeout(() => {
+                        this.loadPendingRequests();
+                    }, 1500);
+                } else {
+                    this.showStatus('submitStatus', 'You have already voted on this request.', 'error');
+                }
+            }
+
+            // FHEVM-specific: Request async decryption of vote counts
+            async requestVoteCount(requestId) {
+                // If in demo mode, show vote counts directly
+                if (this.demoMode) {
+                    return this.showDemoVoteCount(requestId);
+                }
+
+                try {
+                    // Check if contract is connected
+                    if (!this.contract) {
+                        console.log('Contract not connected for vote count, switching to demo mode');
+                        this.enableDemoMode();
+                        return this.showDemoVoteCount(requestId);
+                    }
+
+                    this.showStatus('submitStatus', 'Requesting FHE decryption of vote counts...', 'pending');
+
+                    // This function triggers async decryption in the smart contract
+                    const gasLimit = 200000; // Fixed gas limit for FHE decryption request
+                    const tx = await this.contract.requestVoteCount(requestId, {
+                        gasLimit: gasLimit
+                    });
+
+                    this.showStatus('submitStatus', 'FHE decryption request submitted. Waiting for confirmation...', 'pending');
+                    console.log('Vote count request transaction hash:', tx.hash);
+
+                    const receipt = await tx.wait();
+                    console.log('Vote count request confirmed in block:', receipt.blockNumber);
+
+                    this.showStatus('submitStatus', 'Vote count decryption request submitted! Check back in a few moments for results.', 'success');
+
+                    // Periodically check for results
+                    this.pollVoteCountResults(requestId);
+
+                } catch (error) {
+                    console.error('Vote count request error, switching to demo mode:', error);
+                    // Automatically switch to demo mode on error
+                    this.enableDemoMode();
+                    return this.showDemoVoteCount(requestId);
+                }
+            }
+
+            async showDemoVoteCount(requestId) {
+                this.showStatus('submitStatus', 'Decrypting vote counts in demo mode...', 'pending');
+
+                // Simulate FHE decryption delay
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                const request = this.demoRequests.find(req => req.id === requestId);
+                if (request) {
+                    const voteCountDiv = document.getElementById(`voteCount_${requestId}`);
+                    if (voteCountDiv) {
+                        voteCountDiv.innerHTML = `
+                            <div class="vote-results">
+                                <h5>🔓 Decrypted Vote Counts (Demo):</h5>
+                                <p><strong>✅ Approvals:</strong> ${request.approvals}</p>
+                                <p><strong>❌ Rejections:</strong> ${request.rejections}</p>
+                                <p><strong>Total Votes:</strong> ${request.approvals + request.rejections}</p>
+                                <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">🎭 Simulated FHE decryption in demo mode</p>
+                            </div>
+                        `;
+                        voteCountDiv.style.display = 'block';
+                    }
+
+                    this.showStatus('submitStatus', 'Vote counts successfully decrypted in demo mode! 🎭', 'success');
+                }
+            }
+
+            // Poll for decrypted vote count results
+            async pollVoteCountResults(requestId, attempts = 0) {
+                const maxAttempts = 20; // Poll for up to 2 minutes
+
+                try {
+                    const voteCountResult = await this.contract.voteCountResults(requestId);
+
+                    if (voteCountResult.ready) {
+                        // Results are ready, display them
+                        const voteCountDiv = document.getElementById(`voteCount_${requestId}`);
+                        if (voteCountDiv) {
+                            voteCountDiv.innerHTML = `
+                                <div class="vote-results">
+                                    <h5>🔓 Decrypted Vote Counts:</h5>
+                                    <p><strong>✅ Approvals:</strong> ${voteCountResult.approvals}</p>
+                                    <p><strong>❌ Rejections:</strong> ${voteCountResult.rejections}</p>
+                                    <p><strong>Total Votes:</strong> ${parseInt(voteCountResult.approvals) + parseInt(voteCountResult.rejections)}</p>
+                                </div>
+                            `;
+                            voteCountDiv.style.display = 'block';
+                        }
+
+                        this.showStatus('submitStatus', 'Vote counts successfully decrypted and displayed!', 'success');
+                    } else if (attempts < maxAttempts) {
+                        // Results not ready yet, try again in 6 seconds
+                        setTimeout(() => {
+                            this.pollVoteCountResults(requestId, attempts + 1);
+                        }, 6000);
+                    } else {
+                        this.showStatus('submitStatus', 'Vote count decryption is taking longer than expected. Please try again later.', 'error');
+                    }
+
+                } catch (error) {
+                    console.error('Error polling vote count results:', error);
+                    if (attempts < maxAttempts) {
+                        setTimeout(() => {
+                            this.pollVoteCountResults(requestId, attempts + 1);
+                        }, 6000);
+                    }
+                }
+            }
+
+            // Admin function to add authorized voters
+            async addAuthorizedVoter(voterAddress) {
+                try {
+                    this.showStatus('submitStatus', 'Adding authorized voter...', 'pending');
+
+                    const tx = await this.contract.addAuthorizedVoter(voterAddress);
+                    await tx.wait();
+
+                    this.showStatus('submitStatus', 'Authorized voter added successfully!', 'success');
+                } catch (error) {
+                    console.error('Error adding authorized voter:', error);
+                    this.showStatus('submitStatus', 'Error adding authorized voter: ' + error.message, 'error');
+                }
+            }
+
+            // Check if user has voted on a specific request
+            async checkUserVote(requestId, userAddress) {
+                try {
+                    const hasVoted = await this.contract.hasUserVoted(requestId, userAddress);
+                    return hasVoted;
+                } catch (error) {
+                    console.error('Error checking user vote:', error);
+                    return false;
+                }
+            }
+
+
+
+
+            // Manual wallet connection
+            async manualConnectWallet() {
+                try {
+                    this.showStatus('submitStatus', 'Connecting to MetaMask wallet...', 'pending');
+                    document.getElementById('connectWalletBtn').disabled = true;
+                    document.getElementById('connectWalletBtn').textContent = 'Connecting...';
+
+                    if (typeof window.ethereum === 'undefined') {
+                        this.showStatus('submitStatus', 'MetaMask not installed. Please install MetaMask browser extension from metamask.io', 'error');
+                        this.resetConnectButton();
+                        return;
+                    }
+
+                    const success = await this.connectWallet();
+                    if (success) {
+                        this.showStatus('submitStatus', 'Wallet connected successfully! ✅ You can now use the application.', 'success');
+                    } else {
+                        this.resetConnectButton();
+                    }
+                } catch (error) {
+                    console.error('Manual wallet connection failed:', error);
+                    if (error.code === 4001) {
+                        this.showStatus('submitStatus', 'Connection rejected. Please click the connect button and approve the MetaMask request to continue.', 'error');
+                    } else if (error.code === -32002) {
+                        this.showStatus('submitStatus', 'MetaMask request pending. Please check your MetaMask extension and approve the connection.', 'error');
+                    } else {
+                        this.showStatus('submitStatus', `Connection failed: ${error.message}`, 'error');
+                    }
+                    this.resetConnectButton();
+                }
+            }
+
+            resetConnectButton() {
+                document.getElementById('connectWalletBtn').disabled = false;
+                document.getElementById('connectWalletBtn').textContent = '🦊 Connect MetaMask Wallet';
+            }
+
+            // Show debug information
+            async showDebugInfo() {
+                let debugInfo = '=== WALLET CONNECTION DEBUG ===\n\n';
+
+                // Check MetaMask availability
+                debugInfo += `MetaMask Available: ${typeof window.ethereum !== 'undefined'}\n`;
+
+                // Check wallet connection
+                debugInfo += `Provider: ${this.provider ? 'Connected' : 'Not Connected'}\n`;
+                debugInfo += `Signer: ${this.signer ? 'Connected' : 'Not Connected'}\n`;
+                debugInfo += `Contract: ${this.contract ? 'Connected' : 'Not Connected'}\n\n`;
+
+                // Contract information
+                debugInfo += `=== CONTRACT INFORMATION ===\n`;
+                debugInfo += `Contract Address: ${this.contractAddress}\n`;
+
+                // Network information
+                debugInfo += `\n=== NETWORK INFORMATION ===\n`;
+                const SEPOLIA_CHAIN_ID = 11155111;
+
+                if (this.provider) {
+                    try {
+                        const network = await this.provider.getNetwork();
+                        debugInfo += `Current Network: ${network.name || 'Unknown'}\n`;
+                        debugInfo += `Chain ID: ${network.chainId} (${network.chainId === SEPOLIA_CHAIN_ID ? 'Sepolia ✅' : 'Not Sepolia ❌'})\n`;
+                        debugInfo += `Expected Chain ID: ${SEPOLIA_CHAIN_ID} (Sepolia)\n`;
+                    } catch (error) {
+                        debugInfo += `Network Error: ${error.message}\n`;
+                    }
+                } else {
+                    debugInfo += `Network: Provider not connected\n`;
+                }
+
+                // Account information
+                debugInfo += `\n=== ACCOUNT INFORMATION ===\n`;
+                if (this.signer) {
+                    try {
+                        const address = await this.signer.getAddress();
+                        debugInfo += `User Address: ${address}\n`;
+
+                        // Check balance
+                        const balance = await this.provider.getBalance(address);
+                        debugInfo += `ETH Balance: ${ethers.utils.formatEther(balance)} ETH\n`;
+                    } catch (error) {
+                        debugInfo += `Address Error: ${error.message}\n`;
+                    }
+                } else {
+                    debugInfo += `Account: Signer not connected\n`;
+                }
+
+                // Contract test
+                debugInfo += `\n=== CONTRACT TEST ===\n`;
+                if (this.contract) {
+                    try {
+                        const requestCount = await this.contract.getRequestCount();
+                        debugInfo += `Contract Request Count: ${requestCount.toString()}\n`;
+                        debugInfo += `Contract Status: Working ✅\n`;
+                    } catch (error) {
+                        debugInfo += `Contract Error: ${error.message} ❌\n`;
+                    }
+                } else {
+                    debugInfo += `Contract: Not initialized\n`;
+                }
+
+                // Browser info
+                debugInfo += `\n=== BROWSER INFORMATION ===\n`;
+                debugInfo += `User Agent: ${navigator.userAgent.substring(0, 100)}...\n`;
+
+                console.log(debugInfo);
+                alert(debugInfo);
+            }
+
+            showStatus(elementId, message, type) {
+                const statusElement = document.getElementById(elementId);
+                statusElement.textContent = message;
+                statusElement.className = `status ${type}`;
+                statusElement.style.display = 'block';
+
+                if (type === 'success') {
+                    setTimeout(() => {
+                        statusElement.style.display = 'none';
+                    }, 5000);
+                }
+            }
+        }
+
+        const app = new PrivacyProcurementSystem();
+    </script>
+</body>
+</html>
